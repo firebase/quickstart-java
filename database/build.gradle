@@ -1,0 +1,25 @@
+group 'com.google.firebase.quickstart'
+version '1.0'
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+
+apply plugin: 'application'
+mainClassName = 'com.google.firebase.quickstart.Database'
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+
+    // Firebase Java SDK
+    compile 'com.google.firebase:firebase-server-sdk:3.0.0'
+
+    // Sundial Job Scheduler
+    compile 'org.knowm:sundial:2.1.1'
+}
