@@ -4,7 +4,6 @@
 build/
 
 *.class
-*.jar
 *.war
 *.ear
 *.aar
