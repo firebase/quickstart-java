@@ -17,6 +17,7 @@ package com.google.firebase.quickstart;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseCredentials;
 import com.google.firebase.database.*;
 import com.google.firebase.quickstart.email.MyEmailer;
 import com.google.firebase.quickstart.model.Post;
@@ -181,8 +182,9 @@ public class Database {
         // Initialize Firebase
         try {
             // [START initialize]
+            FileInputStream serviceAccount = new FileInputStream("service-account.json");
             FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setServiceAccount(new FileInputStream("service-account.json"))
+                    .setCredential(FirebaseCredentials.fromCertificate(serviceAccount))
                     .setDatabaseUrl(DATABASE_URL)
                     .build();
             FirebaseApp.initializeApp(options);

@@ -18,7 +18,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
     // Firebase Java SDK
-    compile 'com.google.firebase:firebase-server-sdk:3.0.1'
+    compile 'com.google.firebase:firebase-admin:4.1.1'
 
     // Sundial Job Scheduler
     compile 'org.knowm:sundial:2.1.1'
