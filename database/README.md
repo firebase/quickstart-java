@@ -17,7 +17,7 @@ Getting Started
 ---------------
 
 - Create your project on the [Firebase Console](https://console.firebase.google.com).
-- Create a service account as described in [Adding Firebase to your Server](https://firebase.google.com/docs/server/setup) and download the JSON file.
+- Create a service account as described in [Adding Firebase to your Server](https://firebase.google.com/docs/admin/setup) and download the JSON file.
   - Copy the json file to this folder and rename it to `service-account.json`.
 - Change the `DATATBASE_URL` variable in `Database.java` to be the URL of your Firebase Database.
 
