@@ -28,8 +28,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 /**
- * Firebase Database quickstart sample for the server Java SDK.
- * See: https://firebase.google.com/docs/server/setup#add_firebase_to_your_app
+ * Firebase Database quickstart sample for the Java Admin SDK.
+ * See: https://firebase.google.com/docs/admin/setup#add_firebase_to_your_app
  */
 public class Database {
 
