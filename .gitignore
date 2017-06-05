@@ -7,3 +7,4 @@ build/
 *.war
 *.ear
 *.aar
+*.iml

@@ -1,10 +1,11 @@
 group 'com.google.firebase.quickstart'
 version '1.0'
 
+apply plugin: 'groovy'
 apply plugin: 'java'
 
 apply plugin: 'application'
-mainClassName = 'com.google.firebase.quickstart.Database'
+mainClassName = 'com.google.firebase.quickstart.AuthSnippets'
 
 sourceCompatibility = 1.8
 
@@ -15,8 +16,5 @@ repositories {
 
 dependencies {
     // Firebase Java SDK
-    compile 'com.google.firebase:firebase-admin:4.1.1'
-
-    // Sundial Job Scheduler
-    compile 'org.knowm:sundial:2.1.1'
+    compile 'com.google.firebase:firebase-admin:5.0.2-SNAPSHOT'
 }
