@@ -1,0 +1,27 @@
+group 'com.google.firebase.quickstart'
+version '1.0'
+
+apply plugin: 'java'
+
+apply plugin: 'application'
+mainClassName = 'com.google.firebase.quickstart.Messenger'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+run {
+    if (project.hasProperty("message")) {
+        args = args << "${message}"
+    }
+    standardInput = System.in
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile 'com.google.api-client:google-api-client:1.22.0'
+    compile 'com.google.code.gson:gson:2.8.1'
+}
