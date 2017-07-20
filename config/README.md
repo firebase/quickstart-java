@@ -1,7 +1,7 @@
 Firebase Remote Config REST API Java Quickstart
 ===============================================
 
-The Firebase Remote Config Java quickstart app demonstrates fetching and
+The Firebase Remote Config Java quickstart app demonstrates retrieving and
 updating the Firebase Remote Config template.
 
 Introduction
@@ -16,29 +16,64 @@ Getting started
 1. [Add Firebase to your Android Project](https://firebase.google.com/docs/android/setup).
 2. Create a service account as described in [Adding Firebase to your Server](https://firebase.google.com/docs/admin/setup) and download the JSON file.
   - Copy the private key JSON file to this folder and rename it to `service-account.json`.
-3. Change the `PROJECT_ID` variable in `Messenger.java` to your project ID.
+3. Change the `PROJECT_ID` variable in `Configure.java` to your project ID.
 
 Run
 ---
 
-- From the `config` directory run `./gradlew build run -Pfetch` to fetch the template.
-- Store the returned template in a file.
+- From the `config` directory run `./gradlew run -Paction=get` to retrieve the template.
+  - The returned template is stored in a file named `config.json`.
+  - Note the Etag printed to the console you will need to use it when publishing template updates.
 - Update the template.
-- From the `config` directory run `./gradlew build run -Ppush` to update the template.
+  - If your template already has parameters, adjust one or more of the values.
+  - If your template is empty, update it to look like this:
+
+        {
+          "conditions": [
+            {
+              "name": "AndroidUsers",
+              "expression": "device.os == 'android'",
+              "tagColor": "PURPLE"
+            },
+            {
+              "name": "iOSUsers",
+              "expression": "device.os == 'ios'",
+              "tagColor": "GREEN"
+            }
+          ],
+          "parameters": {
+            "welcome_message": {
+              "defaultValue": {
+                "value": "Welcome"
+              },
+              "conditionalValues": {
+                "AndroidUsers": {
+                  "value": "Welcome Android User"
+                },
+                "iOSUsers": {
+                  "value": "Welcome iOS User"
+                }
+              }
+            }
+          }
+        }
+
+- From the `config` directory run `./gradlew run -Paction=publish -Petag='<LATEST_ETAG>'` to update the template.
+  - Be sure to set the etag to the one that was last printed in the console.
 - Confirm in the console that the template has been updated.
+  - At this point mobile clients can fetch the updated values.
 
 Best practices
 --------------
 
 This section provides some additional information about how the Remote Config
-REST API should be used when fetching and updating templates.
+REST API should be used when retrieving and updating templates.
 
 ### Etags ###
 
-Every fetch of the Remote Config template contains an Etag. This Etag is a
+Each time the Remote Config template it retrieved an Etag is included. This Etag is a
 unique identifier of the current template on the server. When submitting updates
-to the template you must submit your last fetched Etag to ensure that your
-updates are consistent.
+to the template you must include the latest Etag to ensure that your updates are consistent.
 
 In the event that you want to completely overwrite the server's template use
 an Etag of "\*". Use this with caution since this operation cannot be undone.

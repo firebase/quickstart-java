@@ -1,0 +1,25 @@
+apply plugin: 'java'
+apply plugin: 'application'
+mainClassName = 'com.google.firebase.samples.config.Configure'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+run {
+    if (project.hasProperty("action")) {
+        args = args << "${action}"
+    }
+    if (project.hasProperty("etag")) {
+        args = args << "${etag}"
+    }
+    standardInput = System.in
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile 'com.google.api-client:google-api-client:1.22.0'
+    compile 'com.google.code.gson:gson:2.7'
+}
