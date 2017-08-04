@@ -49,12 +49,28 @@ public class AuthSnippets {
     return task;
   }
 
+  public static Task<UserRecord> getUserByPhoneNumber(String phoneNumber) {
+    // [START get_user_by_phone]
+    Task<UserRecord> task = FirebaseAuth.getInstance().getUserByPhoneNumber(phoneNumber)
+        .addOnSuccessListener(userRecord -> {
+          // See the UserRecord reference doc for the contents of userRecord.
+          System.out.println("Successfully fetched user data: " + userRecord.getPhoneNumber());
+        })
+        .addOnFailureListener(e -> {
+          System.err.println("Error fetching user data: " + e.getMessage());
+        });
+    // [END get_user_by_phone]
+
+    return task;
+  }
+
   public static Task<UserRecord> createUser() {
     // [START create_user]
     CreateRequest request = new CreateRequest()
         .setEmail("user@example.com")
         .setEmailVerified(false)
         .setPassword("secretPassword")
+        .setPhoneNumber("+11234567890")
         .setDisplayName("John Doe")
         .setPhotoUrl("http://www.example.com/12345678/photo.png")
         .setDisabled(false);
@@ -76,7 +92,8 @@ public class AuthSnippets {
     // [START create_user_with_uid]
     CreateRequest request = new CreateRequest()
         .setUid("some-uid")
-        .setEmail("user@example.com");
+        .setEmail("user@example.com")
+        .setPhoneNumber("+11234567890");
 
     Task<UserRecord> task = FirebaseAuth.getInstance().createUser(request)
         .addOnSuccessListener(userRecord -> {
@@ -95,6 +112,7 @@ public class AuthSnippets {
     // [START update_user]
     UpdateRequest request = new UpdateRequest(uid)
         .setEmail("user@example.com")
+        .setPhoneNumber("+11234567890")
         .setEmailVerified(true)
         .setPassword("newPassword")
         .setDisplayName("Jane Doe")
@@ -147,6 +165,7 @@ public class AuthSnippets {
     createUserWithUid()
         .continueWithTask(task -> getUserById("some-uid"))
         .continueWithTask(task -> getUserByEmail("user@example.com"))
+        .continueWithTask(task -> getUserByPhoneNumber("+11234567890"))
         .continueWithTask(task -> updateUser("some-uid"))
         .continueWithTask(task -> deleteUser("some-uid"))
         .addOnCompleteListener(task -> System.out.println("Done! Success: " + task.isSuccessful()));
