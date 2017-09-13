@@ -17,6 +17,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Scanner;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Retrieve and publish templates for Firebase Remote Config using the REST API.
@@ -51,10 +53,12 @@ public class Configure {
   private static void getTemplate() throws IOException {
     HttpURLConnection httpURLConnection = getCommonConnection();
     httpURLConnection.setRequestMethod("GET");
+    httpURLConnection.setRequestProperty("Accept-Encoding", "gzip");
 
     int code = httpURLConnection.getResponseCode();
     if (code == 200) {
-      String response = inputstreamToString(httpURLConnection.getInputStream());
+      InputStream inputStream = new GZIPInputStream(httpURLConnection.getInputStream());
+      String response = inputstreamToString(inputStream);
 
       JsonParser jsonParser = new JsonParser();
       JsonElement jsonElement = jsonParser.parse(response);
@@ -100,10 +104,12 @@ public class Configure {
     httpURLConnection.setDoOutput(true);
     httpURLConnection.setRequestMethod("PUT");
     httpURLConnection.setRequestProperty("If-Match", etag);
+    httpURLConnection.setRequestProperty("Content-Encoding", "gzip");
 
     String configStr = readConfig();
 
-    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(httpURLConnection.getOutputStream());
+    GZIPOutputStream gzipOutputStream = new GZIPOutputStream(httpURLConnection.getOutputStream());
+    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(gzipOutputStream);
     outputStreamWriter.write(configStr);
     outputStreamWriter.flush();
     outputStreamWriter.close();
