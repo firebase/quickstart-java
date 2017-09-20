@@ -15,17 +15,17 @@
  */
 package com.google.firebase.quickstart;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.auth.FirebaseCredentials;
 import com.google.firebase.database.*;
 import com.google.firebase.quickstart.email.MyEmailer;
 import com.google.firebase.quickstart.model.Post;
 import com.google.firebase.quickstart.model.User;
+import java.io.IOException;
 import org.knowm.sundial.SundialJobScheduler;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 /**
  * Firebase Database quickstart sample for the Java Admin SDK.
@@ -184,12 +184,12 @@ public class Database {
             // [START initialize]
             FileInputStream serviceAccount = new FileInputStream("service-account.json");
             FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredential(FirebaseCredentials.fromCertificate(serviceAccount))
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .setDatabaseUrl(DATABASE_URL)
                     .build();
             FirebaseApp.initializeApp(options);
             // [END initialize]
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             System.out.println("ERROR: invalid service account credentials. See README.");
             System.out.println(e.getMessage());
 
