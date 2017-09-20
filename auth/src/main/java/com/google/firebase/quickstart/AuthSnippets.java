@@ -4,11 +4,14 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.auth.UserRecord.CreateRequest;
 import com.google.firebase.auth.UserRecord.UpdateRequest;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -95,6 +98,38 @@ public class AuthSnippets {
     // [END delete_user]
   }
 
+  public static void createCustomToken() throws InterruptedException, ExecutionException {
+    // [START custom_token]
+    String uid = "some-uid";
+
+    String customToken = FirebaseAuth.getInstance().createCustomTokenAsync(uid).get();
+    // Send token back to client
+    // [END custom_token]
+    System.out.println("Created custom token: " + customToken);
+  }
+
+  public static void createCustomTokenWithClaims() throws InterruptedException, ExecutionException {
+    // [START custom_token_with_claims]
+    String uid = "some-uid";
+    Map<String, Object> additionalClaims = new HashMap<String, Object>();
+    additionalClaims.put("premiumAccount", true);
+
+    String customToken = FirebaseAuth.getInstance()
+        .createCustomTokenAsync(uid, additionalClaims).get();
+    // Send token back to client
+    // [END custom_token_with_claims]
+    System.out.println("Created custom token: " + customToken);
+  }
+
+  public static void verifyIdToken(String idToken) throws InterruptedException, ExecutionException {
+    // [START verify_id_token]
+    // idToken comes from the client app (shown above)
+    FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken).get();
+    String uid = decodedToken.getUid();
+    // [END verify_id_token]
+    System.out.println("Decoded ID token from user: " + uid);
+  }
+
   public static void main(String[] args) throws InterruptedException, ExecutionException {
     System.out.println("Hello, AuthSnippets!");
 
@@ -121,6 +156,8 @@ public class AuthSnippets {
     getUserByPhoneNumber("+11234567890");
     updateUser("some-uid");
     deleteUser("some-uid");
+    createCustomToken();
+    createCustomTokenWithClaims();
     System.out.println("Done!");
   }
 

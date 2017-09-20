@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     // Firebase Java SDK
-    compile 'com.google.firebase:firebase-admin:5.1.0'
+    compile 'com.google.firebase:firebase-admin:5.3.1'
 
     // Sundial Job Scheduler
     compile 'org.knowm:sundial:2.1.1'
