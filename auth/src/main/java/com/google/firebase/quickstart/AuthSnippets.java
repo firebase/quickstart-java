@@ -1,15 +1,18 @@
 package com.google.firebase.quickstart;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseCredentials;
+import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.auth.UserRecord.CreateRequest;
 import com.google.firebase.auth.UserRecord.UpdateRequest;
-import com.google.firebase.tasks.Task;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Auth snippets for documentation.
@@ -19,52 +22,32 @@ import java.io.IOException;
  */
 public class AuthSnippets {
 
-  public static Task<UserRecord> getUserById(String uid) {
+  public static void getUserById(String uid) throws InterruptedException, ExecutionException {
     // [START get_user_by_id]
-    Task<UserRecord> task = FirebaseAuth.getInstance().getUser(uid)
-        .addOnSuccessListener(userRecord -> {
-          // See the UserRecord reference doc for the contents of userRecord.
-          System.out.println("Successfully fetched user data: " + userRecord.getUid());
-        })
-        .addOnFailureListener(e -> {
-          System.err.println("Error fetching user data: " + e.getMessage());
-        });
+    UserRecord userRecord = FirebaseAuth.getInstance().getUserAsync(uid).get();
+    // See the UserRecord reference doc for the contents of userRecord.
+    System.out.println("Successfully fetched user data: " + userRecord.getUid());
     // [END get_user_by_id]
-
-    return task;
   }
 
-  public static Task<UserRecord> getUserByEmail(String email) {
+  public static void getUserByEmail(String email) throws InterruptedException, ExecutionException {
     // [START get_user_by_email]
-    Task<UserRecord> task = FirebaseAuth.getInstance().getUserByEmail(email)
-        .addOnSuccessListener(userRecord -> {
-          // See the UserRecord reference doc for the contents of userRecord.
-          System.out.println("Successfully fetched user data: " + userRecord.getEmail());
-        })
-        .addOnFailureListener(e -> {
-          System.err.println("Error fetching user data: " + e.getMessage());
-        });
+    UserRecord userRecord = FirebaseAuth.getInstance().getUserByEmailAsync(email).get();
+    // See the UserRecord reference doc for the contents of userRecord.
+    System.out.println("Successfully fetched user data: " + userRecord.getEmail());
     // [END get_user_by_email]
-
-    return task;
   }
 
-  public static Task<UserRecord> getUserByPhoneNumber(String phoneNumber) {
+  public static void getUserByPhoneNumber(
+      String phoneNumber) throws InterruptedException, ExecutionException {
     // [START get_user_by_phone]
-    Task<UserRecord> task = FirebaseAuth.getInstance().getUserByPhoneNumber(phoneNumber)
-        .addOnSuccessListener(userRecord -> {
-          // See the UserRecord reference doc for the contents of userRecord.
-          System.out.println("Successfully fetched user data: " + userRecord.getPhoneNumber());
-        })
-        .addOnFailureListener(e -> {
-          System.err.println("Error fetching user data: " + e.getMessage());
-        });
+    UserRecord userRecord = FirebaseAuth.getInstance().getUserByPhoneNumberAsync(phoneNumber).get();
+    // See the UserRecord reference doc for the contents of userRecord.
+    System.out.println("Successfully fetched user data: " + userRecord.getPhoneNumber());
     // [END get_user_by_phone]
-
-    return task;
   }
 
-  public static Task<UserRecord> createUser() {
+  public static void createUser() throws InterruptedException, ExecutionException {
     // [START create_user]
     CreateRequest request = new CreateRequest()
         .setEmail("user@example.com")
@@ -75,40 +58,24 @@ public class AuthSnippets {
         .setPhotoUrl("http://www.example.com/12345678/photo.png")
         .setDisabled(false);
 
-    Task<UserRecord> task = FirebaseAuth.getInstance().createUser(request)
-        .addOnSuccessListener(userRecord -> {
-          // See the UserRecord reference doc for the contents of userRecord.
-          System.out.println("Successfully created new user: " + userRecord.getUid());
-        })
-        .addOnFailureListener(e -> {
-          System.err.println("Error creating new user: " + e.getMessage());
-        });
+    UserRecord userRecord = FirebaseAuth.getInstance().createUserAsync(request).get();
+    System.out.println("Successfully created new user: " + userRecord.getUid());
     // [END create_user]
-
-    return task;
   }
 
-  public static Task<UserRecord> createUserWithUid() {
+  public static void createUserWithUid() throws InterruptedException, ExecutionException {
     // [START create_user_with_uid]
     CreateRequest request = new CreateRequest()
         .setUid("some-uid")
         .setEmail("user@example.com")
         .setPhoneNumber("+11234567890");
 
-    Task<UserRecord> task = FirebaseAuth.getInstance().createUser(request)
-        .addOnSuccessListener(userRecord -> {
-          // See the UserRecord reference doc for the contents of userRecord.
-          System.out.println("Successfully created new user: " + userRecord.getUid());
-        })
-        .addOnFailureListener(e -> {
-          System.err.println("Error creating new user: " + e.getMessage());
-        });
+    UserRecord userRecord = FirebaseAuth.getInstance().createUserAsync(request).get();
+    System.out.println("Successfully created new user: " + userRecord.getUid());
     // [END create_user_with_uid]
-
-    return task;
   }
 
-  public static Task<UserRecord> updateUser(String uid) {
+  public static void updateUser(String uid) throws InterruptedException, ExecutionException {
     // [START update_user]
     UpdateRequest request = new UpdateRequest(uid)
         .setEmail("user@example.com")
@@ -119,30 +86,51 @@ public class AuthSnippets {
         .setPhotoUrl("http://www.example.com/12345678/photo.png")
         .setDisabled(true);
 
-    Task<UserRecord> task = FirebaseAuth.getInstance().updateUser(request)
-        .addOnSuccessListener(userRecord -> {
-          // See the UserRecord reference doc for the contents of userRecord.
-          System.out.println("Successfully updated user: " + userRecord.getUid());
-        })
-        .addOnFailureListener(e -> {
-          System.err.println("Error updating user: " + e.getMessage());
-        });
+    UserRecord userRecord = FirebaseAuth.getInstance().updateUserAsync(request).get();
+    System.out.println("Successfully updated user: " + userRecord.getUid());
     // [END update_user]
-
-    return task;
   }
 
-  public static Task<Void> deleteUser(String uid) {
+  public static void deleteUser(String uid) throws InterruptedException, ExecutionException {
     // [START delete_user]
-    Task<Void> task = FirebaseAuth.getInstance().deleteUser(uid)
-        .addOnSuccessListener(aVoid -> System.out.println("Successfully deleted user."))
-        .addOnFailureListener(e -> System.err.println("Error updating user: " + e.getMessage()));
+    FirebaseAuth.getInstance().deleteUserAsync(uid).get();
+    System.out.println("Successfully deleted user.");
     // [END delete_user]
-
-    return task;
   }
 
-  public static void main(String[] args) {
+  public static void createCustomToken() throws InterruptedException, ExecutionException {
+    // [START custom_token]
+    String uid = "some-uid";
+
+    String customToken = FirebaseAuth.getInstance().createCustomTokenAsync(uid).get();
+    // Send token back to client
+    // [END custom_token]
+    System.out.println("Created custom token: " + customToken);
+  }
+
+  public static void createCustomTokenWithClaims() throws InterruptedException, ExecutionException {
+    // [START custom_token_with_claims]
+    String uid = "some-uid";
+    Map<String, Object> additionalClaims = new HashMap<String, Object>();
+    additionalClaims.put("premiumAccount", true);
+
+    String customToken = FirebaseAuth.getInstance()
+        .createCustomTokenAsync(uid, additionalClaims).get();
+    // Send token back to client
+    // [END custom_token_with_claims]
+    System.out.println("Created custom token: " + customToken);
+  }
+
+  public static void verifyIdToken(String idToken) throws InterruptedException, ExecutionException {
+    // [START verify_id_token]
+    // idToken comes from the client app (shown above)
+    FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken).get();
+    String uid = decodedToken.getUid();
+    // [END verify_id_token]
+    System.out.println("Decoded ID token from user: " + uid);
+  }
+
+  public static void main(String[] args) throws InterruptedException, ExecutionException {
     System.out.println("Hello, AuthSnippets!");
 
     // Initialize Firebase
@@ -150,7 +138,7 @@ public class AuthSnippets {
       // [START initialize]
       FileInputStream serviceAccount = new FileInputStream("service-account.json");
       FirebaseOptions options = new FirebaseOptions.Builder()
-          .setCredential(FirebaseCredentials.fromCertificate(serviceAccount))
+          .setCredentials(GoogleCredentials.fromStream(serviceAccount))
           .build();
       FirebaseApp.initializeApp(options);
       // [END initialize]
@@ -162,13 +150,15 @@ public class AuthSnippets {
     }
 
     // Smoke test
-    createUserWithUid()
-        .continueWithTask(task -> getUserById("some-uid"))
-        .continueWithTask(task -> getUserByEmail("user@example.com"))
-        .continueWithTask(task -> getUserByPhoneNumber("+11234567890"))
-        .continueWithTask(task -> updateUser("some-uid"))
-        .continueWithTask(task -> deleteUser("some-uid"))
-        .addOnCompleteListener(task -> System.out.println("Done! Success: " + task.isSuccessful()));
+    createUserWithUid();
+    getUserById("some-uid");
+    getUserByEmail("user@example.com");
+    getUserByPhoneNumber("+11234567890");
+    updateUser("some-uid");
+    deleteUser("some-uid");
+    createCustomToken();
+    createCustomTokenWithClaims();
+    System.out.println("Done!");
   }
 
 }
