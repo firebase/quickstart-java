@@ -4,7 +4,7 @@ version '1.0'
 apply plugin: 'java'
 
 apply plugin: 'application'
-mainClassName = 'com.google.firebase.quickstart.Messenger'
+mainClassName = 'com.google.firebase.quickstart.Messaging'
 
 sourceCompatibility = 1.8
 
