@@ -3,8 +3,10 @@ package com.google.firebase.quickstart;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.ExportedUserRecord;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
+import com.google.firebase.auth.ListUsersPage;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.auth.UserRecord.CreateRequest;
 import com.google.firebase.auth.UserRecord.UpdateRequest;
@@ -91,6 +93,81 @@ public class AuthSnippets {
     // [END update_user]
   }
 
+  public static void setCustomUserClaims(
+      String uid) throws InterruptedException, ExecutionException {
+    // [START set_custom_user_claims]
+    // Set admin privilege on the user corresponding to uid.
+    Map<String, Object> claims = new HashMap<>();
+    claims.put("admin", true);
+    FirebaseAuth.getInstance().setCustomClaimsAsync(uid, claims).get();
+    // The new custom claims will propagate to the user's ID token the
+    // next time a new one is issued.
+    // [END set_custom_user_claims]
+
+    String idToken = "id_token";
+    // [START verify_custom_claims]
+    // Verify the ID token first.
+    FirebaseToken decoded = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken).get();
+    if (Boolean.TRUE.equals(decoded.getClaims().get("admin"))) {
+      // Allow access to requested admin resource.
+    }
+    // [END verify_custom_claims]
+
+    // [START read_custom_user_claims]
+    // Lookup the user associated with the specified uid.
+    UserRecord user = FirebaseAuth.getInstance().getUserAsync(uid).get();
+    System.out.println(user.getCustomClaims().get("admin"));
+    // [END read_custom_user_claims]
+  }
+
+  public static void setCustomUserClaimsScript() throws InterruptedException, ExecutionException {
+    // [START set_custom_user_claims_script]
+    UserRecord user = FirebaseAuth.getInstance()
+        .getUserByEmailAsync("user@admin.example.com").get();
+    // Confirm user is verified.
+    if (user.isEmailVerified()) {
+      Map<String, Object> claims = new HashMap<>();
+      claims.put("admin", true);
+      FirebaseAuth.getInstance().setCustomClaimsAsync(user.getUid(), claims).get();
+    }
+    // [END set_custom_user_claims_script]
+  }
+
+  public static void setCustomUserClaimsInc() throws InterruptedException, ExecutionException {
+    // [START set_custom_user_claims_incremental]
+    UserRecord user = FirebaseAuth.getInstance()
+        .getUserByEmailAsync("user@admin.example.com").get();
+    // Add incremental custom claim without overwriting the existing claims.
+    Map<String, Object> currentClaims = user.getCustomClaims();
+    if (Boolean.TRUE.equals(currentClaims.get("admin"))) {
+      // Add level.
+      currentClaims.put("level", 10);
+      // Add custom claims for additional privileges.
+      FirebaseAuth.getInstance().setCustomClaimsAsync(user.getUid(), currentClaims).get();
+    }
+    // [END set_custom_user_claims_incremental]
+  }
+
+  public static void listAllUsers() throws InterruptedException, ExecutionException  {
+    // [START list_all_users]
+    // Start listing users from the beginning, 1000 at a time.
+    ListUsersPage page = FirebaseAuth.getInstance().listUsersAsync(null).get();
+    while (page != null) {
+      for (ExportedUserRecord user : page.getValues()) {
+        System.out.println("User: " + user.getUid());
+      }
+      page = page.getNextPage();
+    }
+
+    // Iterate through all users. This will still retrieve users in batches,
+    // buffering no more than 1000 users in memory at a time.
+    page = FirebaseAuth.getInstance().listUsersAsync(null).get();
+    for (ExportedUserRecord user : page.iterateAll()) {
+      System.out.println("User: " + user.getUid());
+    }
+    // [END list_all_users]
+  }
+
   public static void deleteUser(String uid) throws InterruptedException, ExecutionException {
     // [START delete_user]
     FirebaseAuth.getInstance().deleteUserAsync(uid).get();
@@ -155,6 +232,8 @@ public class AuthSnippets {
     getUserByEmail("user@example.com");
     getUserByPhoneNumber("+11234567890");
     updateUser("some-uid");
+    //setCustomUserClaims("some-uid");
+    listAllUsers();
     deleteUser("some-uid");
     createCustomToken();
     createCustomTokenWithClaims();
