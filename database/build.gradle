@@ -19,4 +19,7 @@ dependencies {
 
     // Sundial Job Scheduler
     compile 'org.knowm:sundial:2.1.1'
+
+    // Use SLF4J-based logging
+	compile 'org.slf4j:slf4j-simple:1.7.25'
 }
