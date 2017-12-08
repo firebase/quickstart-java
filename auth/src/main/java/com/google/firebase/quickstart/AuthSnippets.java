@@ -99,7 +99,7 @@ public class AuthSnippets {
     // Set admin privilege on the user corresponding to uid.
     Map<String, Object> claims = new HashMap<>();
     claims.put("admin", true);
-    FirebaseAuth.getInstance().setCustomClaimsAsync(uid, claims).get();
+    FirebaseAuth.getInstance().setCustomUserClaimsAsync(uid, claims).get();
     // The new custom claims will propagate to the user's ID token the
     // next time a new one is issued.
     // [END set_custom_user_claims]
@@ -128,7 +128,7 @@ public class AuthSnippets {
     if (user.isEmailVerified()) {
       Map<String, Object> claims = new HashMap<>();
       claims.put("admin", true);
-      FirebaseAuth.getInstance().setCustomClaimsAsync(user.getUid(), claims).get();
+      FirebaseAuth.getInstance().setCustomUserClaimsAsync(user.getUid(), claims).get();
     }
     // [END set_custom_user_claims_script]
   }
@@ -143,7 +143,7 @@ public class AuthSnippets {
       // Add level.
       currentClaims.put("level", 10);
       // Add custom claims for additional privileges.
-      FirebaseAuth.getInstance().setCustomClaimsAsync(user.getUid(), currentClaims).get();
+      FirebaseAuth.getInstance().setCustomUserClaimsAsync(user.getUid(), currentClaims).get();
     }
     // [END set_custom_user_claims_incremental]
   }
