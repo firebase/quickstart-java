@@ -209,8 +209,8 @@ public class AuthSnippets {
 
   public static void verifyIdTokenCheckRevoked(String idToken) throws InterruptedException, ExecutionException {
     // [START verify_id_token_check_revoked]
-    // idToken comes from the client app (shown above)
-    FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken).get();
+    // Note the second parameter, checkRevoked set to true.
+    FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken, true).get();
     String uid = decodedToken.getUid();
     // [END verify_id_token_check_revoked]
     System.out.println("Decoded ID token from user: " + uid);
