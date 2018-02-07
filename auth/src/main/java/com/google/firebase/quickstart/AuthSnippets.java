@@ -227,7 +227,7 @@ public class AuthSnippets {
     System.out.println("Decoded ID token from user: " + uid);
   }
 
-  public static void revokeIdTokens(String idToken) { 
+  public static void revokeIdTokens(String idToken) throws InterruptedException, ExecutionException { 
     String uid="someUid";
     // [START revoke_tokens]
     FirebaseToken decodedToken = FirebaseAuth.getInstance().revokeRefreshTokens(uid).get();
