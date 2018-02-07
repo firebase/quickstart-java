@@ -207,6 +207,24 @@ public class AuthSnippets {
     System.out.println("Decoded ID token from user: " + uid);
   }
 
+  public static void verifyIdTokenCheckRevoked(String idToken) throws InterruptedException, ExecutionException {
+    // [START verify_id_token_check_revoked]
+    // idToken comes from the client app (shown above)
+    FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken).get();
+    String uid = decodedToken.getUid();
+    // [END verify_id_token_check_revoked]
+    System.out.println("Decoded ID token from user: " + uid);
+  }
+
+  public static void revokeIdTokens(String idToken) throws InterruptedException, ExecutionException {
+    // [START revoke_tokens]
+    // idToken comes from the client app (shown above)
+    FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken).get();
+    String uid = decodedToken.getUid();
+    // [END revoke_tokens]
+    System.out.println("Decoded ID token from user: " + uid);
+  }
+
   public static void main(String[] args) throws InterruptedException, ExecutionException {
     System.out.println("Hello, AuthSnippets!");
 
