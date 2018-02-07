@@ -33,7 +33,7 @@ import java.io.FileInputStream;
  */
 public class Database {
 
-    private static final String DATABASE_URL = "https://<YOUR-DATABSE>.firebaseio.com/";
+    private static final String DATABASE_URL = "https://<YOUR-DATABASE>.firebaseio.com/";
 
     private static DatabaseReference database;
 
