@@ -212,7 +212,8 @@ public class AuthSnippets {
     try {
       // Verify the ID token while checking if the token is revoked by passing checkRevoked
       // as true.
-      FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken, true).get();
+      boolean checkRevoked = true;
+      FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken, checkRevoked).get();
       String uid = decodedToken.getUid();
       System.out.println("Decoded ID token not revoked from user: " + uid);
     } 
@@ -244,8 +245,7 @@ public class AuthSnippets {
     // Save the refresh token revocation timestamp. This is needed to track ID token
     // revocation via Firebase rules.
     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("metadata/" + uid);
-    ref.setValueAsync(MapBuilder.of("revokeTime", revocationSecond));
-    System.out.println("Decoded ID token from user: " + uid);
+    ref.setValueAsync(MapBuilder.of("revokeTime", revocationSecond)).get();
     // [END save_revocation_in_db]
     
   }
