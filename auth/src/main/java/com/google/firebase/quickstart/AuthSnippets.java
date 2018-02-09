@@ -214,9 +214,10 @@ public class AuthSnippets {
       // as true.
       FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken, true).get();
       String uid = decodedToken.getUid();
+      System.out.println("Decoded ID token not revoked from user: " + uid);
     } 
     catch (FirebaseAuthException e) {
-      if (FirebaseUserManager.ID_TOKEN_REVOKED_ERROR ==  e.getErrorCode()) {
+      if ("id-token-revoked" ==  e.getErrorCode()) {
         // Token is valid but has been revoked.
         // When this occurs, inform the user to reauthenticate or signOut() the user.
       } else {
@@ -224,7 +225,6 @@ public class AuthSnippets {
       }
     }
     // [END verify_id_token_check_revoked]
-    System.out.println("Decoded ID token from user: " + uid);
   }
 
   public static void revokeIdTokens(String idToken) throws InterruptedException, ExecutionException { 
@@ -234,13 +234,20 @@ public class AuthSnippets {
     UserRecord user = FirebaseAuth.getInstance().getUserAsync(uid).get();
     // Convert to seconds as the auth_time in the token claims is in seconds too. 
     long revocationSecond = user.getTokensValidAfterTimestamp() / 1000;
+    System.err.println("Tokens revoked at: ", revocationSecond);
+    // [END revoke_tokens]
 
+    // [START save_revocation_in_db]
+    UserRecord user = FirebaseAuth.getInstance().getUserAsync(uid).get();
+    // Convert to seconds as the auth_time in the token claims is in seconds too. 
+    long revocationSecond = user.getTokensValidAfterTimestamp() / 1000;
     // Save the refresh token revocation timestamp. This is needed to track ID token
     // revocation via Firebase rules.
     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("metadata/" + uid);
     ref.setValueAsync(MapBuilder.of("revokeTime", revocationSecond));
-    // [END revoke_tokens]
     System.out.println("Decoded ID token from user: " + uid);
+    // [END save_revocation_in_db]
+    
   }
 
   public static void main(String[] args) throws InterruptedException, ExecutionException {
