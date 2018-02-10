@@ -239,12 +239,6 @@ public class AuthSnippets {
     // [END revoke_tokens]
 
     // [START save_revocation_in_db]
-    // After revoking refresh tokens, follow up with:
-    UserRecord user = FirebaseAuth.getInstance().getUserAsync(uid).get();
-    // Convert to seconds as the auth_time in the token claims is in seconds too. 
-    long revocationSecond = user.getTokensValidAfterTimestamp() / 1000;
-    // Save the refresh token revocation timestamp. This is needed to track ID token
-    // revocation via Firebase rules.
     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("metadata/" + uid);
     ref.setValueAsync(MapBuilder.of("revokeTime", revocationSecond)).get();
     // [END save_revocation_in_db]
