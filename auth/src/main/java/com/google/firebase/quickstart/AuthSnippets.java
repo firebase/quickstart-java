@@ -222,7 +222,7 @@ public class AuthSnippets {
         // Token is valid but has been revoked.
         // When this occurs, inform the user to reauthenticate or signOut() the user.
       } else {
-        // Error is other than "revoked" token is invalid.
+        // Token is invalid.
       }
     }
     // [END verify_id_token_check_revoked]
@@ -235,7 +235,7 @@ public class AuthSnippets {
     UserRecord user = FirebaseAuth.getInstance().getUserAsync(uid).get();
     // Convert to seconds as the auth_time in the token claims is in seconds too. 
     long revocationSecond = user.getTokensValidAfterTimestamp() / 1000;
-    System.err.println("Tokens revoked at: " + revocationSecond);
+    System.out.println("Tokens revoked at: " + revocationSecond);
     // [END revoke_tokens]
 
     // [START save_revocation_in_db]
