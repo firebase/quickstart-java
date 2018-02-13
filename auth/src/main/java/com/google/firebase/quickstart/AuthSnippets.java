@@ -207,6 +207,44 @@ public class AuthSnippets {
     System.out.println("Decoded ID token from user: " + uid);
   }
 
+  public static void verifyIdTokenCheckRevoked(String idToken) throws InterruptedException, ExecutionException {
+    // [START verify_id_token_check_revoked]
+    try {
+      // Verify the ID token while checking if the token is revoked by passing checkRevoked
+      // as true.
+      boolean checkRevoked = true;
+      FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken, checkRevoked).get();
+      // Token is valid and not revoked.
+      String uid = decodedToken.getUid();
+    } 
+    catch (FirebaseAuthException e) {
+      if ("id-token-revoked".equals(e.getErrorCode())) {
+        // Token is valid but has been revoked.
+        // When this occurs, inform the user to reauthenticate or signOut() the user.
+      } else {
+        // Error is other than "revoked" token is invalid.
+      }
+    }
+    // [END verify_id_token_check_revoked]
+  }
+
+  public static void revokeIdTokens(String idToken) throws InterruptedException, ExecutionException { 
+    String uid="someUid";
+    // [START revoke_tokens]
+    FirebaseToken decodedToken = FirebaseAuth.getInstance().revokeRefreshTokens(uid).get();
+    UserRecord user = FirebaseAuth.getInstance().getUserAsync(uid).get();
+    // Convert to seconds as the auth_time in the token claims is in seconds too. 
+    long revocationSecond = user.getTokensValidAfterTimestamp() / 1000;
+    System.err.println("Tokens revoked at: " + revocationSecond);
+    // [END revoke_tokens]
+
+    // [START save_revocation_in_db]
+    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("metadata/" + uid);
+    ref.setValueAsync(MapBuilder.of("revokeTime", revocationSecond)).get();
+    // [END save_revocation_in_db]
+    
+  }
+
   public static void main(String[] args) throws InterruptedException, ExecutionException {
     System.out.println("Hello, AuthSnippets!");
 
