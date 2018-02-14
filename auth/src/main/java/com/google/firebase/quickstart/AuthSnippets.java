@@ -234,7 +234,7 @@ public class AuthSnippets {
     UserRecord user = FirebaseAuth.getInstance().getUserAsync(uid).get();
     // Convert to seconds as the auth_time in the token claims is in seconds too. 
     long revocationSecond = user.getTokensValidAfterTimestamp() / 1000;
-    System.err.println("Tokens revoked at: " + revocationSecond);
+    System.out.println("Tokens revoked at: " + revocationSecond);
     // [END revoke_tokens]
 
     // [START save_revocation_in_db]
