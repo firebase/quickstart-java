@@ -221,7 +221,8 @@ public class AuthSnippets {
       String uid = decodedToken.getUid();
     } catch (ExecutionException e) {
       if (e.getCause() instanceof FirebaseAuthException) {
-        if ( ((FirebaseAuthException) e.getCause()).getErrorCode().equals("id-token-revoked")) {
+        FirebaseAuthException authError = (FirebaseAuthException) e.getCause();
+        if (authError.getErrorCode().equals("id-token-revoked")) {
           // Token has been revoked. Inform the user to reauthenticate or signOut() the user.
         } else {
           // Token is invalid.
@@ -243,7 +244,7 @@ public class AuthSnippets {
 
     // [START save_revocation_in_db]
     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("metadata/" + uid);
-    ref.setValueAsync(ImmutableMap.<String, Object>of("revokeTime", revocationSecond)).get();
+    ref.setValueAsync(new HashMap<String, Object>().put("revokeTime", revocationSecond)).get();
     // [END save_revocation_in_db]
     
   }
