@@ -233,7 +233,7 @@ public class AuthSnippets {
   public static void revokeIdTokens(String idToken) throws InterruptedException, ExecutionException { 
     String uid="someUid";
     // [START revoke_tokens]
-    FirebaseToken decodedToken = FirebaseAuth.getInstance().revokeRefreshTokens(uid).get();
+    FirebaseToken decodedToken = FirebaseAuth.getInstance().revokeRefreshTokensAsync(uid).get();
     UserRecord user = FirebaseAuth.getInstance().getUserAsync(uid).get();
     // Convert to seconds as the auth_time in the token claims is in seconds too. 
     long revocationSecond = user.getTokensValidAfterTimestamp() / 1000;
