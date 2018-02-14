@@ -219,11 +219,13 @@ public class AuthSnippets {
       FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken, checkRevoked).get();
       // Token is valid and not revoked.
       String uid = decodedToken.getUid();
-    } catch (FirebaseAuthException e) {
-      if ("id-token-revoked".equals(e.getErrorCode())) {
-        // Token has been revoked. Inform the user to reauthenticate or signOut() the user.
-      } else {
-        // Token is invalid.
+    } catch (ExecutionException e) {
+      if (e.getCause() instanceof FirebaseAuthException) {
+        if ( ((FirebaseAuthException) e.getCause()).getErrorCode().equals("id-token-revoked")) {
+          // Token has been revoked. Inform the user to reauthenticate or signOut() the user.
+        } else {
+          // Token is invalid.
+        }
       }
     }
     // [END verify_id_token_check_revoked]
