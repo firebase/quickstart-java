@@ -1,7 +1,6 @@
 package com.google.firebase.quickstart;
 
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.ExportedUserRecord;
