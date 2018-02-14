@@ -219,10 +219,9 @@ public class AuthSnippets {
     } 
     catch (FirebaseAuthException e) {
       if ("id-token-revoked".equals(e.getErrorCode())) {
-        // Token is valid but has been revoked.
-        // When this occurs, inform the user to reauthenticate or signOut() the user.
+        // Token has been revoked. Inform the user to reauthenticate or signOut() the user.
       } else {
-        // Error is other than "revoked" token is invalid.
+        // Token is invalid.
       }
     }
     // [END verify_id_token_check_revoked]
