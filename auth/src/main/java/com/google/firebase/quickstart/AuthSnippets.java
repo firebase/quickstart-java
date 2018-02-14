@@ -10,7 +10,6 @@ import com.google.firebase.auth.ListUsersPage;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.auth.UserRecord.CreateRequest;
 import com.google.firebase.auth.UserRecord.UpdateRequest;
-import com.google.firebase.database.MapBuilder;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -240,7 +239,7 @@ public class AuthSnippets {
 
     // [START save_revocation_in_db]
     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("metadata/" + uid);
-    ref.setValueAsync(MapBuilder.of("revokeTime", revocationSecond)).get();
+    ref.setValueAsync(ImmutableMap.<String, Object>of("revokeTime", revocationSecond)).get();
     // [END save_revocation_in_db]
     
   }
