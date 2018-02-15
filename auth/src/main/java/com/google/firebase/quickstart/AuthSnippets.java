@@ -5,11 +5,13 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.ExportedUserRecord;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.ListUsersPage;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.auth.UserRecord.CreateRequest;
 import com.google.firebase.auth.UserRecord.UpdateRequest;
+import com.google.firebase.database.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -216,13 +218,14 @@ public class AuthSnippets {
       FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken, checkRevoked).get();
       // Token is valid and not revoked.
       String uid = decodedToken.getUid();
-    } 
-    catch (FirebaseAuthException e) {
-      if ("id-token-revoked".equals(e.getErrorCode())) {
-        // Token is valid but has been revoked.
-        // When this occurs, inform the user to reauthenticate or signOut() the user.
-      } else {
-        // Token is invalid.
+    } catch (ExecutionException e) {
+      if (e.getCause() instanceof FirebaseAuthException) {
+        FirebaseAuthException authError = (FirebaseAuthException) e.getCause();
+        if (authError.getErrorCode().equals("id-token-revoked")) {
+          // Token has been revoked. Inform the user to reauthenticate or signOut() the user.
+        } else {
+          // Token is invalid.
+        }
       }
     }
     // [END verify_id_token_check_revoked]
@@ -231,7 +234,7 @@ public class AuthSnippets {
   public static void revokeIdTokens(String idToken) throws InterruptedException, ExecutionException { 
     String uid="someUid";
     // [START revoke_tokens]
-    FirebaseToken decodedToken = FirebaseAuth.getInstance().revokeRefreshTokens(uid).get();
+    FirebaseAuth.getInstance().revokeRefreshTokensAsync(uid).get();
     UserRecord user = FirebaseAuth.getInstance().getUserAsync(uid).get();
     // Convert to seconds as the auth_time in the token claims is in seconds too. 
     long revocationSecond = user.getTokensValidAfterTimestamp() / 1000;
@@ -240,7 +243,9 @@ public class AuthSnippets {
 
     // [START save_revocation_in_db]
     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("metadata/" + uid);
-    ref.setValueAsync(MapBuilder.of("revokeTime", revocationSecond)).get();
+    Map<String, Object> userData = new HashMap<>();
+    userData.put("revokeTime", revocationSecond);
+    ref.setValueAsync(userData).get();
     // [END save_revocation_in_db]
     
   }
