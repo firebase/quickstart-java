@@ -1,7 +1,6 @@
 package com.google.firebase.quickstart;
 
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.ExportedUserRecord;
@@ -244,7 +243,9 @@ public class AuthSnippets {
 
     // [START save_revocation_in_db]
     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("metadata/" + uid);
-    ref.setValueAsync(new HashMap<String, Object>().put("revokeTime", revocationSecond)).get();
+    Map<String, Object> userData = new HashMap<>();
+    userData.put("revokeTime", revocationSecond);
+    ref.setValueAsync(userData).get();
     // [END save_revocation_in_db]
     
   }
