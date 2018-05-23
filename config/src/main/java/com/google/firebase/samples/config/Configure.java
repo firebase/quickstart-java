@@ -15,6 +15,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Scanner;
 import java.util.zip.GZIPInputStream;
@@ -28,7 +29,7 @@ public class Configure {
   private final static String PROJECT_ID = "<YOUR-PROJECT-ID>";
   private final static String BASE_URL = "https://firebaseremoteconfig.googleapis.com";
   private final static String REMOTE_CONFIG_ENDPOINT = "/v1/projects/" + PROJECT_ID + "/remoteConfig";
-  private final static String REMOTE_CONFIG_SCOPE = "https://www.googleapis.com/auth/firebase.remoteconfig";
+  private final static String[] SCOPES = { "https://www.googleapis.com/auth/firebase.remoteconfig" };
 
   /**
    * Retrieve a valid access token that can be use to authorize requests to the Remote Config REST
@@ -40,7 +41,7 @@ public class Configure {
   private static String getAccessToken() throws IOException {
     GoogleCredential googleCredential = GoogleCredential
         .fromStream(new FileInputStream("service-account.json"))
-        .createScoped(Collections.singleton(REMOTE_CONFIG_SCOPE));
+        .createScoped(Arrays.asList(SCOPES));
     googleCredential.refreshToken();
     return googleCredential.getAccessToken();
   }
