@@ -38,6 +38,7 @@ public class Configure {
    * @return Access token.
    * @throws IOException
    */
+  // [START retrieve_access_token]
   private static String getAccessToken() throws IOException {
     GoogleCredential googleCredential = GoogleCredential
         .fromStream(new FileInputStream("service-account.json"))
@@ -45,6 +46,7 @@ public class Configure {
     googleCredential.refreshToken();
     return googleCredential.getAccessToken();
   }
+  // [END retrieve_access_token]
 
   /**
    * Get current Firebase Remote Config template from server and store it locally.
