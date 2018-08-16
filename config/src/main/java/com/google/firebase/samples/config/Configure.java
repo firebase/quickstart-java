@@ -142,7 +142,8 @@ public class Configure {
       System.out.println("ETag from server: " + etag);
     } else {
       System.out.println("Error:");
-      System.out.println(inputstreamToString(httpURLConnection.getErrorStream()));
+      InputStream inputStream = new GZIPInputStream(httpURLConnection.getErrorStream());
+      System.out.println(inputstreamToString(inputStream));
     }
   }
 
