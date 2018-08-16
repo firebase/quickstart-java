@@ -15,6 +15,9 @@ run {
     if (project.hasProperty("etag")) {
         args = args << "${etag}"
     }
+    if (project.hasProperty("version") && !project.version.equals("unspecified")) {
+        args = args << "${version}"
+    }
     standardInput = System.in
 }
 
