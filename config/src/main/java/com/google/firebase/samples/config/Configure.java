@@ -37,15 +37,20 @@ public class Configure {
    * Retrieve a valid access token that can be use to authorize requests to the Remote Config REST
    * API.
    *
+   * This method assumes it is either running in a trusted Google environment like GCP or if running
+   * elsewhere the the GOOGLE_APPLICATION_CREDENTIALS environment variable is set to the path of the
+   * service account credentials file.
+   *
    * @return Access token.
    * @throws IOException
    */
   // [START retrieve_access_token]
   private static String getAccessToken() throws IOException {
-    GoogleCredential googleCredential = GoogleCredential
-        .fromStream(new FileInputStream("service-account.json"))
+    GoogleCredential googleCredential = GoogleCredential.getApplicationDefault()
         .createScoped(Arrays.asList(SCOPES));
-    googleCredential.refreshToken();
+    if (googleCredential.getAccessToken() == null || googleCredential.getExpiresInSeconds() < 300) {
+      googleCredential.refreshToken();
+    }
     return googleCredential.getAccessToken();
   }
   // [END retrieve_access_token]
@@ -83,7 +88,9 @@ public class Configure {
       String etag = httpURLConnection.getHeaderField("ETag");
       System.out.println("ETag from server: " + etag);
     } else {
-      System.out.println(inputstreamToString(httpURLConnection.getErrorStream()));
+      System.out.println("Error:");
+      InputStream inputStream = new GZIPInputStream(httpURLConnection.getErrorStream());
+      System.out.println(inputstreamToString(inputStream));
     }
 
   }
