@@ -37,9 +37,9 @@ public class Configure {
    * Retrieve a valid access token that can be use to authorize requests to the Remote Config REST
    * API.
    *
-   * This method assumes it is either running in a trusted Google environment like GCP or if running
-   * elsewhere the the GOOGLE_APPLICATION_CREDENTIALS environment variable is set to the path of the
-   * service account credentials file.
+   * This method must be called in either a trusted Google environment like GCP or if running
+   * elsewhere the GOOGLE_APPLICATION_CREDENTIALS environment variable must be set to the path
+   * of the service account credentials file.
    *
    * @return Access token.
    * @throws IOException
