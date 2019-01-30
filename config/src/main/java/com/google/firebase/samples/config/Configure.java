@@ -35,7 +35,8 @@ public class Configure {
 
   /**
    * Retrieve a valid access token that can be use to authorize requests to the Remote Config REST
-   * API.
+   * API. If there is no existing access token or if the existing one will expire in less than
+   * five minutes a fresh token is fetched.
    *
    * This method must be called in either a trusted Google environment like GCP or if running
    * elsewhere the GOOGLE_APPLICATION_CREDENTIALS environment variable must be set to the path
