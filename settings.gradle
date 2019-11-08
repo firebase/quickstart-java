@@ -1,1 +1,1 @@
-include ':auth', ':database'
+include ':auth', ':database', ':messaging', ':config'
