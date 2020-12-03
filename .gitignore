@@ -10,3 +10,4 @@ service-account.json
 *.ear
 *.aar
 *.iml
+.DS_Store
