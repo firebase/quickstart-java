@@ -4,10 +4,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
@@ -69,6 +69,7 @@ public class Messaging {
 
   /**
    * Send request to FCM message using HTTP.
+   * Encoded with UTF-8 and support special characters
    *
    * @param fcmMessage Body of the HTTP request.
    * @throws IOException
@@ -76,10 +77,10 @@ public class Messaging {
   private static void sendMessage(JsonObject fcmMessage) throws IOException {
     HttpURLConnection connection = getConnection();
     connection.setDoOutput(true);
-    DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
-    outputStream.writeBytes(fcmMessage.toString());
-    outputStream.flush();
-    outputStream.close();
+    OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
+    writer.write(fcmMessage.toString());
+    writer.flush();
+    writer.close();
 
     int responseCode = connection.getResponseCode();
     if (responseCode == 200) {
