@@ -69,7 +69,7 @@ public class Messaging {
 
   /**
    * Send request to FCM message using HTTP.
-   * Encoded with UTF-8 and support special characters
+   * Encoded with UTF-8 and support special characters.
    *
    * @param fcmMessage Body of the HTTP request.
    * @throws IOException
