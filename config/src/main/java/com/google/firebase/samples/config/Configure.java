@@ -1,6 +1,6 @@
 package com.google.firebase.samples.config;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -18,7 +18,6 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Scanner;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -42,11 +41,11 @@ public class Configure {
    */
   // [START retrieve_access_token]
   private static String getAccessToken() throws IOException {
-    GoogleCredential googleCredential = GoogleCredential
-        .fromStream(new FileInputStream("service-account.json"))
-        .createScoped(Arrays.asList(SCOPES));
-    googleCredential.refreshToken();
-    return googleCredential.getAccessToken();
+    GoogleCredentials googleCredentials = GoogleCredentials
+            .fromStream(new FileInputStream("service-account.json"))
+            .createScoped(Arrays.asList(SCOPES));
+    googleCredentials.refreshAccessToken();
+    return googleCredentials.getAccessToken().getTokenValue();
   }
   // [END retrieve_access_token]
 
