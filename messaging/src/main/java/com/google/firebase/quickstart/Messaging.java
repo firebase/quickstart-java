@@ -46,8 +46,7 @@ public class Messaging {
     GoogleCredentials googleCredentials = GoogleCredentials
             .fromStream(new FileInputStream("service-account.json"))
             .createScoped(Arrays.asList(SCOPES));
-    googleCredentials.refreshAccessToken();
-    return googleCredentials.getAccessToken().getTokenValue();
+    return googleCredentials.refreshAccessToken().getTokenValue();
   }
   // [END retrieve_access_token]
 
