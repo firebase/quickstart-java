@@ -8,7 +8,7 @@ repositories {
     mavenCentral()
 }
 
-run.doFirst { environment 'GOOGLE_APPLICATION_CREDENTIALS', '/Users/chongshao/dev/quickstart-java/config/service-account.json' }
+# run.doFirst { environment 'GOOGLE_APPLICATION_CREDENTIALS', '[YOUR_SERVICE_ACCOUNT_JSON_DIR]' }
 
 run {
     if (project.hasProperty("action")) {
