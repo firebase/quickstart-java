@@ -17,7 +17,7 @@ Getting started
 
 1. Create a service account as described in [Adding Firebase to your Server](https://firebase.google.com/docs/admin/setup) and download the JSON file.
   - Copy the json file to this folder and rename it to `service-account.json`.
-2. Change the `PROJECT_ID` variable in `com.google.firebase.quickstart.Messaging.java` to your project ID.
+2. Change the build.gradle file under messaging/, to replace '[YOUR_SERVICE_ACCOUNT_JSON_DIR]' to the directory of `service-account.json`.
 
 Run
 ---
