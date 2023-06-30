@@ -55,8 +55,7 @@ public class Messaging {
   // [START retrieve_access_token]
   private static String getAccessToken() throws IOException {
     GoogleCredentials googleCredentials = GoogleCredentials
-            .fromStream(new FileInputStream("android-gcm-test-519bd-4b2b39c38ceb.json"))
-            // .fromStream(new FileInputStream("service-account.json"))
+            .fromStream(new FileInputStream("service-account.json"))
             .createScoped(Arrays.asList(SCOPES));
     googleCredentials.refresh();
     return googleCredentials.getAccessToken().getTokenValue();
@@ -198,7 +197,6 @@ public class Messaging {
   }
 
   public static void main(String[] args) throws IOException, FirebaseMessagingException {
-    System.out.println(getAccessToken());
     initializeWithDefaultCredentials();
     if (args.length == 1 && args[0].equals("common-message")) {
       sendCommonMessage();

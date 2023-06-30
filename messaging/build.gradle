@@ -12,6 +12,8 @@ repositories {
     mavenCentral()
 }
 
+run.doFirst { environment 'GOOGLE_APPLICATION_CREDENTIALS', '/Users/chongshao/dev/quickstart-java/messaging/service-account.json' }
+
 run {
     if (project.hasProperty("message")) {
         args = args << "${message}"
@@ -25,3 +27,8 @@ dependencies {
     compile 'com.google.auth:google-auth-library-oauth2-http:0.26.0'
     compile 'com.google.code.gson:gson:2.8.7'
 }
+
+dependencies {
+  implementation 'com.google.firebase:firebase-admin:9.1.1'
+}
+
