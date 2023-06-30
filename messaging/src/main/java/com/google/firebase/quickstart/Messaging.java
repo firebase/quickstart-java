@@ -12,6 +12,17 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Scanner;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.Aps;
+import com.google.firebase.messaging.AndroidConfig;
+import com.google.firebase.messaging.ApnsConfig;
+import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.AndroidNotification;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 
 /**
  * Firebase Cloud Messaging (FCM) can be used to send messages to clients on iOS, Android and Web.
@@ -23,20 +34,20 @@ import java.util.Scanner;
  */
 public class Messaging {
 
-  private static final String PROJECT_ID = "<YOUR-PROJECT-ID>";
-  private static final String BASE_URL = "https://fcm.googleapis.com";
-  private static final String FCM_SEND_ENDPOINT = "/v1/projects/" + PROJECT_ID + "/messages:send";
-
   private static final String MESSAGING_SCOPE = "https://www.googleapis.com/auth/firebase.messaging";
   private static final String[] SCOPES = { MESSAGING_SCOPE };
 
   private static final String TITLE = "FCM Notification";
   private static final String BODY = "Notification from FCM";
-  public static final String MESSAGE_KEY = "message";
 
   /**
-   * Retrieve a valid access token that can be use to authorize requests to the FCM REST
+   * Retrieves a valid access token that can be used to authorize requests to the FCM REST
    * API.
+   * This method is not used in the rest of the class: the main method in this class uses 
+   * the default credential in sending a FCM message. However, this method is used to 
+   * demonstrate how to generate an OAuth2 access token using the service account 
+   * credential downloaded from Firebase Console. The access token can be attached to your
+   * HTTP request to FCM. 
    *
    * @return Access token.
    * @throws IOException
@@ -46,197 +57,151 @@ public class Messaging {
     GoogleCredentials googleCredentials = GoogleCredentials
             .fromStream(new FileInputStream("service-account.json"))
             .createScoped(Arrays.asList(SCOPES));
-    googleCredentials.refreshAccessToken();
+    googleCredentials.refresh();
     return googleCredentials.getAccessToken().getTokenValue();
   }
   // [END retrieve_access_token]
 
   /**
-   * Create HttpURLConnection that can be used for both retrieving and publishing.
+   * Sends request message to FCM using HTTP.
    *
-   * @return Base HttpURLConnection.
-   * @throws IOException
+   * @param message The message of the send request.
+   * @throws FirebaseMessagingException
    */
-  private static HttpURLConnection getConnection() throws IOException {
-    // [START use_access_token]
-    URL url = new URL(BASE_URL + FCM_SEND_ENDPOINT);
-    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-    httpURLConnection.setRequestProperty("Authorization", "Bearer " + getAccessToken());
-    httpURLConnection.setRequestProperty("Content-Type", "application/json; UTF-8");
-    return httpURLConnection;
-    // [END use_access_token]
-  }
-
-  /**
-   * Send request to FCM message using HTTP.
-   * Encoded with UTF-8 and support special characters.
-   *
-   * @param fcmMessage Body of the HTTP request.
-   * @throws IOException
-   */
-  private static void sendMessage(JsonObject fcmMessage) throws IOException {
-    HttpURLConnection connection = getConnection();
-    connection.setDoOutput(true);
-    OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
-    writer.write(fcmMessage.toString());
-    writer.flush();
-    writer.close();
-
-    int responseCode = connection.getResponseCode();
-    if (responseCode == 200) {
-      String response = inputstreamToString(connection.getInputStream());
+  private static void sendMessage(Message message) throws FirebaseMessagingException {
+    try {
+      String response = FirebaseMessaging.getInstance().send(message);
       System.out.println("Message sent to Firebase for delivery, response:");
       System.out.println(response);
-    } else {
-      System.out.println("Unable to send message to Firebase:");
-      String response = inputstreamToString(connection.getErrorStream());
-      System.out.println(response);
+    } catch (FirebaseMessagingException e) {
+      System.out.println("Unable to send message to Firebase, error code:");
+      System.out.println(e.getMessagingErrorCode());
     }
   }
-
+  
   /**
-   * Send a message that uses the common FCM fields to send a notification message to all
+   * Sends a message that uses the common FCM fields to send a notification message to all
    * platforms. Also platform specific overrides are used to customize how the message is
    * received on Android and iOS.
    *
-   * @throws IOException
+   * @throws FirebaseMessagingException
    */
-  private static void sendOverrideMessage() throws IOException {
-    JsonObject overrideMessage = buildOverrideMessage();
+  private static void sendOverrideMessage() throws FirebaseMessagingException {
+    Message overrideMessage = buildOverrideMessage();
     System.out.println("FCM request body for override message:");
     prettyPrint(overrideMessage);
     sendMessage(overrideMessage);
   }
 
   /**
-   * Build the body of an FCM request. This body defines the common notification object
+   * Builds the body of an FCM request. This body defines the common notification object
    * as well as platform specific customizations using the android and apns objects.
    *
-   * @return JSON representation of the FCM request body.
+   * @return Message representation of the FCM request body.
    */
-  private static JsonObject buildOverrideMessage() {
-    JsonObject jNotificationMessage = buildNotificationMessage();
+  private static Message buildOverrideMessage() {
+    Message message = buildNotificationMessage()
+	    .setAndroidConfig(buildAndroidOverridePayload())
+		.setApnsConfig(buildApnsOverridePayload())		
+        .build();
 
-    JsonObject messagePayload = jNotificationMessage.get(MESSAGE_KEY).getAsJsonObject();
-    messagePayload.add("android", buildAndroidOverridePayload());
-
-    JsonObject apnsPayload = new JsonObject();
-    apnsPayload.add("headers", buildApnsHeadersOverridePayload());
-    apnsPayload.add("payload", buildApsOverridePayload());
-
-    messagePayload.add("apns", apnsPayload);
-
-    jNotificationMessage.add(MESSAGE_KEY, messagePayload);
-
-    return jNotificationMessage;
+    return message;
   }
-
+  
   /**
-   * Build the android payload that will customize how a message is received on Android.
+   * Builds the android config that will customize how a message is received on Android.
    *
-   * @return android payload of an FCM request.
-   */
-  private static JsonObject buildAndroidOverridePayload() {
-    JsonObject androidNotification = new JsonObject();
-    androidNotification.addProperty("click_action", "android.intent.action.MAIN");
-
-    JsonObject androidNotificationPayload = new JsonObject();
-    androidNotificationPayload.add("notification", androidNotification);
-
-    return androidNotificationPayload;
+   * @return android config of an FCM request.
+   */  
+  private static AndroidConfig buildAndroidOverridePayload() {
+    AndroidNotification androidNotification = AndroidNotification.builder()
+	    .setClickAction("android.intent.action.MAIN")
+		.build();
+		
+	AndroidConfig androidConfig = AndroidConfig.builder()
+	    .setNotification(androidNotification)
+		.build();
+	  
+    return androidConfig;
   }
-
+  
   /**
-   * Build the apns payload that will customize how a message is received on iOS.
+   * Builds the apns config that will customize how a message is received on iOS.
    *
-   * @return apns payload of an FCM request.
+   * @return apns config of an FCM request.
    */
-  private static JsonObject buildApnsHeadersOverridePayload() {
-    JsonObject apnsHeaders = new JsonObject();
-    apnsHeaders.addProperty("apns-priority", "10");
-
-    return apnsHeaders;
+  private static ApnsConfig buildApnsOverridePayload() {
+    Aps aps = Aps.builder()
+	    .setBadge(1)
+		.build();
+  
+    ApnsConfig apnsConfig = ApnsConfig.builder()
+	    .putHeader("apns-priority", "10")
+		.setAps(aps)
+		.build();
+		
+	return apnsConfig;
   }
-
+  
   /**
-   * Build aps payload that will add a badge field to the message being sent to
-   * iOS devices.
+   * Sends notification message to FCM for delivery to registered devices.
    *
-   * @return JSON object with aps payload defined.
+   * @throws FirebaseMessagingException
    */
-  private static JsonObject buildApsOverridePayload() {
-    JsonObject badgePayload = new JsonObject();
-    badgePayload.addProperty("badge", 1);
-
-    JsonObject apsPayload = new JsonObject();
-    apsPayload.add("aps", badgePayload);
-
-    return apsPayload;
-  }
-
-  /**
-   * Send notification message to FCM for delivery to registered devices.
-   *
-   * @throws IOException
-   */
-  public static void sendCommonMessage() throws IOException {
-    JsonObject notificationMessage = buildNotificationMessage();
+  public static void sendCommonMessage() throws FirebaseMessagingException {
+    Message notificationMessage = buildNotificationMessage().build();
     System.out.println("FCM request body for message using common notification object:");
     prettyPrint(notificationMessage);
     sendMessage(notificationMessage);
   }
 
   /**
-   * Construct the body of a notification message request.
+   * Constructs the body of a notification message request.
    *
-   * @return JSON of notification message.
+   * @return the builder object of the notification message.
    */
-  private static JsonObject buildNotificationMessage() {
-    JsonObject jNotification = new JsonObject();
-    jNotification.addProperty("title", TITLE);
-    jNotification.addProperty("body", BODY);
-
-    JsonObject jMessage = new JsonObject();
-    jMessage.add("notification", jNotification);
-    jMessage.addProperty("topic", "news");
-
-    JsonObject jFcm = new JsonObject();
-    jFcm.add(MESSAGE_KEY, jMessage);
-
-    return jFcm;
+  private static Message.Builder buildNotificationMessage() {
+    Notification notification = Notification.builder()
+	    .setTitle(TITLE)
+		.setBody(BODY)
+        .build();
+		
+    Message.Builder message = Message.builder()
+	    .setNotification(notification)
+		.setTopic("news");
+	
+	return message;
   }
 
   /**
-   * Read contents of InputStream into String.
+   * Pretty-prints an object.
    *
-   * @param inputStream InputStream to read.
-   * @return String containing contents of InputStream.
-   * @throws IOException
+   * @param object object to pretty print.
    */
-  private static String inputstreamToString(InputStream inputStream) throws IOException {
-    StringBuilder stringBuilder = new StringBuilder();
-    Scanner scanner = new Scanner(inputStream);
-    while (scanner.hasNext()) {
-      stringBuilder.append(scanner.nextLine());
-    }
-    return stringBuilder.toString();
-  }
-
-  /**
-   * Pretty print a JsonObject.
-   *
-   * @param jsonObject JsonObject to pretty print.
-   */
-  private static void prettyPrint(JsonObject jsonObject) {
+  private static void prettyPrint(Object object) {
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    System.out.println(gson.toJson(jsonObject) + "\n");
+    System.out.println(gson.toJson(object) + "\n");
+  }
+  
+  /**
+   * Initializes the enviroment with Firebase default credentials.
+   */
+  public static void initializeWithDefaultCredentials() throws IOException {
+    // [START initialize_sdk_with_application_default]
+    FirebaseOptions options = new FirebaseOptions.Builder()
+        .setCredentials(GoogleCredentials.getApplicationDefault())
+        .build();
+
+    FirebaseApp.initializeApp(options);
+    // [END initialize_sdk_with_application_default]
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException, FirebaseMessagingException {
+    initializeWithDefaultCredentials();
     if (args.length == 1 && args[0].equals("common-message")) {
       sendCommonMessage();
     } else if (args.length == 1 && args[0].equals("override-message")) {
-      sendOverrideMessage();
+	  sendOverrideMessage();
     } else {
       System.err.println("Invalid command. Please use one of the following commands:");
       // To send a simple notification message that is sent to all platforms using the common
