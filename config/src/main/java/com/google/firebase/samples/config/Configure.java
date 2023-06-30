@@ -67,7 +67,7 @@ public class Configure {
   }
   
   /**
-   * Prints the last 5 available Firebase Remote Config template metadata from the server.
+   * Prints the last 5 available Firebase Remote Config template metadata from the server. 
    */
   private static void getVersions() {
   	ListVersionsOptions listVersionsOptions = ListVersionsOptions.builder().setPageSize(5).build();
