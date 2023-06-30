@@ -16,7 +16,7 @@ Getting started
 1. [Add Firebase to your Android Project](https://firebase.google.com/docs/android/setup).
 2. Create a service account as described in [Adding Firebase to your Server](https://firebase.google.com/docs/admin/setup) and download the JSON file.
   - Copy the private key JSON file to this folder and rename it to `service-account.json`.
-3. Change the build.gradle file under messaging/, to replace '[YOUR_SERVICE_ACCOUNT_JSON_DIR]' to the directory of `service-account.json`.
+3. Change the build.gradle file under config/, to replace '[YOUR_SERVICE_ACCOUNT_JSON_DIR]' to the directory of `service-account.json`.
 
 Run
 ---
