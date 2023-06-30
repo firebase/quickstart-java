@@ -8,6 +8,8 @@ repositories {
     mavenCentral()
 }
 
+run.doFirst { environment 'GOOGLE_APPLICATION_CREDENTIALS', '/Users/chongshao/dev/quickstart-java/config/service-account.json' }
+
 run {
     if (project.hasProperty("action")) {
         args = args << "${action}"
@@ -25,4 +27,5 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'com.google.auth:google-auth-library-oauth2-http:0.26.0'
     compile 'com.google.code.gson:gson:2.8.7'
+    implementation 'com.google.firebase:firebase-admin:9.1.1'	
 }
