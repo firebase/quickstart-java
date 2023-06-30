@@ -43,7 +43,7 @@ public class Messaging {
   /**
    * Retrieves a valid access token that can be used to authorize requests to the FCM REST
    * API.
-   * This methods is not used in the rest of the class: the main method in this class uses 
+   * This method is not used in the rest of the class: the main method in this class uses 
    * the default credential in sending a FCM message. However, this method is used to 
    * demonstrate how to generate an OAuth2 access token using the service account 
    * credential downloaded from Firebase Console. The access token can be attached to your
